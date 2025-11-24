@@ -18,7 +18,7 @@ import {
   TrendingUp
 } from "lucide-react";
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://chatinsight-backend.onrender.com';
 
 const DashboardPage = ({ onNavigate }) => {
   const [uploading, setUploading] = useState(false);

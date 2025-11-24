@@ -9,7 +9,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { useAuth } from '../context/AuthContext';
 // import { COLORS, SENTIMENT_COLORS } from '../constants/colors';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://chatinsight-backend.onrender.com';
 const COLORS = { primary: '#6366f1' };
 const SENTIMENT_COLORS = { positive: '#10b981', neutral: '#6366f1', negative: '#ef4444' };
 
