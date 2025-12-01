@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FileText, Download } from "lucide-react";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://chatinsight-backend.onrender.com";
 
 const GenerateReportPage = () => {
   const { token } = useAuth();
