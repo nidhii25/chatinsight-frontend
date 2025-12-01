@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FileText, Download } from "lucide-react";
 
-const API_BASE = "https://chatinsight-backend.onrender.com";
+const API_BASE = "http://127.0.0.1:8000";
 
 const GenerateReportPage = () => {
   const { token } = useAuth();
@@ -21,9 +21,13 @@ const GenerateReportPage = () => {
 
     try {
       const res = await fetch(`${API_BASE}/api/reports/${chatId}/generate`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
+
 
       const data = await res.json();
 

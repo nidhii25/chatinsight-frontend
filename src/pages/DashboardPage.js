@@ -4,23 +4,25 @@
 // ===========================
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Upload, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SENTIMENT_COLORS } from '../constants/colors';
 import FeatureCard from "../components/FeatureCard";
 import StatCard from "../components/StatCard";
 
-import { 
-  Brain, 
-  Target, 
-  BarChart3, 
+import {
+  Brain,
+  Target,
+  BarChart3,
   FileText,
   TrendingUp
 } from "lucide-react";
 
-const API_BASE = 'https://chatinsight-backend.onrender.com';
+const API_BASE = 'http://127.0.0.1:8000';
 
-const DashboardPage = ({ onNavigate }) => {
+const DashboardPage = () => {
+  const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
   const { token, user, logout } = useAuth();
 
@@ -42,7 +44,7 @@ const DashboardPage = ({ onNavigate }) => {
       if (res.ok) {
         const data = await res.json();
         alert('Chat uploaded successfully!');
-        onNavigate('analytics', data.chat_id);
+        navigate(`/analytics/${data.chat_id}`);
       } else {
         alert('Upload failed');
       }
@@ -54,7 +56,7 @@ const DashboardPage = ({ onNavigate }) => {
   };
 
   return (
-    // original DashboardPage code unchanged
+    // original DashboardPage layout and styling preserved
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Header */}
       <header className="bg-white shadow-md sticky top-0 z-50">
@@ -89,7 +91,7 @@ const DashboardPage = ({ onNavigate }) => {
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-12 text-white shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
-          
+
           <div className="relative z-10">
             <h2 className="text-4xl font-bold mb-4">Unlock Chat Insights</h2>
             <p className="text-xl text-indigo-100 mb-8 max-w-2xl">

@@ -82,9 +82,26 @@ export const AuthProvider = ({ children }) => {
     });
 
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.detail || 'Registration failed');
-    }
+  const error = await res.json();
+
+  let message = 'Registration failed';
+
+  // Case 1: FastAPI returns list of validation errors
+  if (Array.isArray(error.detail)) {
+    message = error.detail.map((e) => e.msg).join(', ');
+  }
+  // Case 2: FastAPI returns a dict object
+  else if (typeof error.detail === 'object') {
+    message = JSON.stringify(error.detail);
+  }
+  // Case 3: Normal error string
+  else if (typeof error.detail === 'string') {
+    message = error.detail;
+  }
+
+  throw new Error(message);
+}
+
 
     return await res.json();
   };

@@ -1,73 +1,89 @@
 
-  // ===========================
-  // File: src/App.js
-  // ===========================
+// ===========================
+// File: src/App.js
+// ===========================
 
-  import React, { useState } from 'react';
-  import { AuthProvider, useAuth } from './context/AuthContext';
-  import LoginPage from './pages/LoginPage';
-  import RegisterPage from './pages/RegisterPage';
-  import DashboardPage from './pages/DashboardPage';
-  import AnalyticsPage from './pages/AnalyticsPage';
-  import Navbar from './components/Navbar';
-  import ReportsPage from './pages/ReportsPage';
-  console.log('page start')
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import Navbar from './components/Navbar';
+import ReportsPage from './pages/ReportsPage';
 
-  const AuthWrapper = ({ authPage, setAuthPage, currentPage, selectedChatId, onNavigate }) => {
-    const { user } = useAuth();
-    console.log(user)
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
 
-    if (!user) {
-      console.log("AUTHENTICATION ISSUES")
-      return authPage === 'login'
-        ? <LoginPage onSwitchToRegister={() => setAuthPage('register')} />
-        : <RegisterPage onSwitchToLogin={() => setAuthPage('login')} />;
-    }
-
-    if (currentPage === 'analytics' && selectedChatId) {
+  if (loading) {
     return (
-      <>
-        <Navbar onNavigate={onNavigate} />
-        <AnalyticsPage chatId={selectedChatId} onNavigate={onNavigate} />
-      </>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your workspace...</p>
+        </div>
+      </div>
     );
   }
 
-    if (currentPage === "reports") {
-    return (
-      <>
-        <Navbar onNavigate={onNavigate} />
-        <ReportsPage />
-      </>
-    );
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
+  return children;
+};
 
+const App = () => {
+  return (
+    <AuthProvider>
+      <Routes>
+        {/* Public auth routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-    return <DashboardPage onNavigate={onNavigate} />;
-  };
+        {/* Default redirect to dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-  const App = () => {
-    const [authPage, setAuthPage] = useState('login');
-    const [currentPage, setCurrentPage] = useState('dashboard');
-    const [selectedChatId, setSelectedChatId] = useState(null);
-
-    const handleNavigate = (page, chatId = null) => {
-      setCurrentPage(page);
-      if (chatId) setSelectedChatId(chatId);
-    };
-
-    return (
-      <AuthProvider>
-        <AuthWrapper
-          authPage={authPage}
-          setAuthPage={setAuthPage}
-          currentPage={currentPage}
-          selectedChatId={selectedChatId}
-          onNavigate={handleNavigate}
+        {/* Protected application routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
         />
-      </AuthProvider>
-    );
-  };
 
-  export default App;
+        <Route
+          path="/analytics/:chatId"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <AnalyticsPage />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <ReportsPage />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </AuthProvider>
+  );
+};
+
+export default App;
