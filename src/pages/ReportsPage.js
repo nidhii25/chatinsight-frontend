@@ -14,6 +14,7 @@ const GenerateReportPage = () => {
 
   const generateReport = async () => {
     if (!chatId.trim()) return;
+    console.log("Sending token:", token);
 
     setLoading(true);
     setReportId(null);
@@ -44,6 +45,35 @@ const GenerateReportPage = () => {
 
     setLoading(false);
   };
+const deleteChat = async () => {
+  if (!chatId.trim()) {
+    alert("Please enter a Chat ID first.");
+    return;
+  }
+
+  if (!window.confirm("Are you sure you want to delete this chat?")) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/chats/${chatId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Chat deleted successfully.");
+      setChatId("");
+      setReportId(null);
+      setSummary("");
+    } else {
+      alert(data.detail || "Failed to delete chat.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong.");
+  }
+};
 
   const downloadFile = async (format) => {
   try {
@@ -103,6 +133,13 @@ const GenerateReportPage = () => {
           {loading ? "Generating..." : "Generate Report"}
         </button>
 
+        <button
+            onClick={deleteChat}
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Delete Chat
+          </button>
+  
         {/* Report Output */}
         {reportId && (
           <div className="mt-6 p-4 bg-slate-100 rounded-lg shadow">
